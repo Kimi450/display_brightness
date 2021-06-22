@@ -1,15 +1,38 @@
 #!/bin/python3
 
 import screen_brightness_control as sbc
-import argparse
-import yaml
+
+import argparse, yaml, geocoder
+
+from suntime import Sun, SunTimeException
+from datetime import datetime
+
+
+def get_times():
+    """get current time (ct), sunset (ss) time and sunrise (ss) time 
+    for the current lattiude and longitude"""
+    
+    latitude, longitude = geocoder.ip('me').latlng
+
+    sun = Sun(latitude, longitude)
+
+    today_sr = sun.get_sunrise_time()
+    today_ss = sun.get_sunset_time()
+    current_time = datetime.now()
+
+    return current_time, today_sr, today_ss
+
+def format_time(time, time_format='%H:%M'):
+    """format time in the given string time_format"""
+    return format(time.strftime(time_format))
 
 def parse_args(config):
     """parse passed in arguments"""
     parser = argparse.ArgumentParser(
         description="Screen dimmer for your monitors"
     )
-    parser.add_argument('--level', '-l', choices=list(config.keys()),
+    parser.add_argument('--level', '-l',
+        choices=list(config["brightness_values"].keys()),
         help='Set brightness level based on options from config.yaml file',
         required=False
     )
@@ -31,7 +54,11 @@ def set_brightness(config, displays, brightness_level):
     and the brightness level
     """
     for display in displays:
-        sbc.set_brightness(config[brightness_level][display], display=display)
+        sbc.set_brightness(
+            config["brightness_values"][brightness_level][display],
+            display=display
+        )
+    return True
 
 def set_brightness_level(args, config):
     """set the brightness level based on the argument(s) or other parameters"""
@@ -40,9 +67,10 @@ def set_brightness_level(args, config):
 def main():
     config = load_config("config.yaml")
     args = parse_args(config)
-
+    ct, sr, ss = get_times()
+    print(get_times())
     brightness_level = set_brightness_level(args, config)
-    displays = config[brightness_level].keys()
+    displays = config["brightness_values"][brightness_level].keys()
     set_brightness(config, displays, brightness_level)
 
 if __name__ == "__main__":

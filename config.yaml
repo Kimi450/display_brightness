@@ -1,8 +1,11 @@
-max:
-  0: 82
-  1: 100
-  2: 100
-min:
-  0: 0
-  1: 0
-  2: 0
+triggers:
+  max: 
+brightness_values:
+  max:
+    0: 82
+    1: 100
+    2: 100
+  min:
+    0: 0
+    1: 0
+    2: 0
