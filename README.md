@@ -1,2 +1,2 @@
-# display_brightness
-Adjust your displays brightness
+# Requirements
+pip install pyyaml pip install pyyaml
