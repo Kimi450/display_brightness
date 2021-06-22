@@ -4,18 +4,14 @@ import screen_brightness_control as sbc
 import argparse
 import yaml
 
-def parse_args():
+def parse_args(config):
     """parse passed in arguments"""
     parser = argparse.ArgumentParser(
         description="Screen dimmer for your monitors"
     )
-    parser.add_argument('--max',
-        help='Set brightness to max settings from config.yaml file',
-        required=False, action="store_true"
-    )
-    parser.add_argument('--min',
-        help='Set brightness to min settings from config.yaml file',
-        required=False, action="store_true"
+    parser.add_argument('--level', '-l', choices=list(config.keys()),
+        help='Set brightness level based on options from config.yaml file',
+        required=False
     )
     return parser.parse_args()
 
@@ -31,21 +27,19 @@ def load_config(location="config.yaml"):
     return config
 
 def set_brightness(config, displays, brightness_level):
-    """set the brightness for all the displays based on the config and the brightness level"""
+    """set the brightness for all the displays based on the config 
+    and the brightness level
+    """
     for display in displays:
         sbc.set_brightness(config[brightness_level][display], display=display)
 
 def set_brightness_level(args, config):
-    """set the brightness level based on the arguments or other parameters"""
-    brightness_level = "min"
-    if args.max:
-        brightness_level = "max"
-    return brightness_level
+    """set the brightness level based on the argument(s) or other parameters"""
+    return args.level
 
 def main():
-    args = parse_args()
-
     config = load_config("config.yaml")
+    args = parse_args(config)
 
     brightness_level = set_brightness_level(args, config)
     displays = config[brightness_level].keys()
