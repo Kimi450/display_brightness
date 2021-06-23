@@ -55,6 +55,11 @@ def parse_args(config):
         required=False,
         default=20
     )
+    parser.add_argument('--toggle', '-tg',
+        help='Toggle brightness level to and from "max" and "min"',
+        required=False,
+        action="store_true"
+    )
     return parser.parse_args()
 
 def load_config(location="config.yaml"):
@@ -84,10 +89,15 @@ def set_brightness(config, displays, brightness_level):
 def set_brightness_level(args, config):
     """set the brightness level based on the argument(s) or other time"""
     level = "default"
-    if args.level:
+    if args.toggle:
+        brightness = sbc.get_brightness()
+        if brightness == list(config["brightness_values"]["max"].values()):
+            level="min"
+        elif brightness == list(config["brightness_values"]["min"].values()):
+            level="max"
+    elif args.level:
         level = args.level
-
-    if args.time:
+    elif args.time:
         ct, sr, ss = get_times()
 
         if args.delta:
