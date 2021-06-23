@@ -2,7 +2,7 @@
 
 import screen_brightness_control as sbc
 
-import argparse, yaml, geocoder
+import argparse, yaml, geocoder, os
 
 from suntime import Sun
 from datetime import datetime, timezone
@@ -55,7 +55,8 @@ def load_config(location="config.yaml"):
     with open(location, 'r') as stream:
         try:
             config = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
+        except Exception as exc:
+
             print(f"Error reading config file at: {location}")
             print(exc)
             exit(1)
@@ -91,7 +92,11 @@ def set_brightness_level(args, config):
     return level
 
 def main():
-    config = load_config("config.yaml")
+    config_path = os.path.join(
+        os.path.split(os.path.realpath(__file__))[0],
+        "config.yaml"
+    )
+    config = load_config(config_path)
     args = parse_args(config)
     brightness_level = set_brightness_level(args, config)
     displays = config["brightness_values"][brightness_level].keys()
