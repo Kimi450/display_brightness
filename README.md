@@ -25,7 +25,7 @@ brightness_values:
 
 Install the following prerequisite python3 libraries
 ```bash
-pip3 install screen_brightness_control pyyaml geocoder suntimes
+pip3 install screen_brightness_control pyyaml geocoder suntime
 ```
 
 ## Usage

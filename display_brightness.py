@@ -4,9 +4,8 @@ import screen_brightness_control as sbc
 
 import argparse, yaml, geocoder
 
-from suntimes import SunTimes
+from suntime import Sun
 from datetime import datetime, timezone
-
 
 def get_times():
     """
@@ -16,10 +15,11 @@ def get_times():
     
     latitude, longitude = geocoder.ip('me').latlng
 
-    sun = SunTimes(latitude, longitude)
+    sun = Sun(latitude, longitude)
+
     current_time = datetime.now(timezone.utc)
-    today_sr = sun.riselocal(current_time)
-    today_ss = sun.setlocal(current_time)
+    today_ss = sun.get_sunset_time()
+    today_sr = sun.get_sunrise_time()
 
     return (current_time, today_sr, today_ss)
 
