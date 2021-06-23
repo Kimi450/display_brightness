@@ -99,14 +99,13 @@ def set_brightness_level(args, config):
         level = args.level
     elif args.time:
         ct, sr, ss = get_times()
-
+        delta = 0
         if args.delta:
-            sr += timedelta(minutes=int(args.delta))
-            ss += timedelta(minutes=int(args.delta))
+            delta = timedelta(minutes=int(args.delta))
 
-        if ct <= sr: # current time less than or equal sunrise time (no sun)
+        if ct <= sr - delta: # current time less than or equal sunrise time (no sun)
             level = "min"
-        elif ct <= ss: # current time less than or equal to sunset time (sun)
+        elif ct <= ss + delta: # current time less than or equal to sunset time (sun)
             level = "max"
         else: # current time more than sunset time (no sun)
             level = "min"

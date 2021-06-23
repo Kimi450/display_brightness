@@ -42,6 +42,12 @@ Running the script without any arguments sets the brightness to `default`.
 python3 display_brightness.py
 ```
 
+Running the script with `-tg` or `-toggle` will toggle the brightness between `min` and `max` settings.
+
+```bash
+python3 display_brightness.py -tg
+```
+
 Running the script with `-l` or `--level` allows you to set the level of brightness from the options defined in the `config.yaml` file.
 
 ```bash
@@ -49,18 +55,16 @@ python3 display_brightness.py -l max
 ```
 
 Running the script with the `-t` or `--time` flag set enables automatic time based brightness control. 
+Adding `-d DELTA` or `--delta DELTA` to it will allow you to set a custom delta in minutes, default value is 20 minutes. 
 
 Conditions are:
 
-|              |    |              | Brightness level |
-|--------------|----|--------------|------------------|
-| Current Time | <= | Sunrise Time |       `min`      |
-| Current Time | <= | Sunset Time  |       `max`      |
-| Current Time | >  | Sunset time  |       `min`      |
-
-
-allows you to set the level of brightness from the options defined in the `config.yaml` file.
+|              |    |                      | Brightness level |
+|--------------|----|----------------------|------------------|
+| Current Time | <= | Sunrise Time - DELTA |       `min`      |
+| Current Time | <= | Sunset Time  + DELTA |       `max`      |
+| Current Time | >  | Sunset time  + DELTA |       `min`      |
 
 ```bash
-python3 display_brightness.py -t
+python3 display_brightness.py -t [-d 20]
 ```
