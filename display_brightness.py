@@ -5,7 +5,7 @@ import screen_brightness_control as sbc
 import argparse, yaml, geocoder, os
 
 from suntime import Sun
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 def get_times():
     """
@@ -36,7 +36,8 @@ def format_times(times, time_format='%H:%M'):
 def parse_args(config):
     """parse passed in arguments"""
     parser = argparse.ArgumentParser(
-        description="Screen dimmer for your monitors"
+        description="Screen dimmer for your monitors",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument('--level', '-l',
         choices=list(config["brightness_values"].keys()),
@@ -47,6 +48,12 @@ def parse_args(config):
         help='Set brightness level based on sunset and sunrise times',
         required=False,
         action="store_true"
+    )
+    parser.add_argument('--delta', '-d',
+        help='Set delta for minutes before sunrise and after sunset for\
+         the brightness to be adjusted',
+        required=False,
+        default=20
     )
     return parser.parse_args()
 
@@ -80,8 +87,13 @@ def set_brightness_level(args, config):
     if args.level:
         level = args.level
 
-    if args.time:    
+    if args.time:
         ct, sr, ss = get_times()
+
+        if args.delta:
+            sr += timedelta(minutes=int(args.delta))
+            ss += timedelta(minutes=int(args.delta))
+
         if ct <= sr: # current time less than or equal sunrise time (no sun)
             level = "min"
         elif ct <= ss: # current time less than or equal to sunset time (sun)
