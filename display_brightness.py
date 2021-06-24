@@ -40,7 +40,6 @@ def parse_args(config):
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument('--level', '-l',
-        choices=list(config["brightness_values"].keys()),
         help='Set brightness level based on options from config.yaml file',
         required=False
     )
@@ -79,11 +78,14 @@ def set_brightness(config, displays, brightness_level):
     set the brightness for all the displays based on the config 
     and the brightness level
     """
-    for display in displays:
-        sbc.set_brightness(
-            config["brightness_values"][brightness_level][display],
-            display=display
-        )
+    if brightness_level.isdigit():
+        sbc.set_brightness(brightness_level)
+    else:
+        for display in displays:
+            sbc.set_brightness(
+                config["brightness_values"][brightness_level][display],
+                display=display
+            )
     return True
 
 def set_brightness_level(args, config):
@@ -120,7 +122,8 @@ def main():
     config = load_config(config_path)
     args = parse_args(config)
     brightness_level = set_brightness_level(args, config)
-    displays = config["brightness_values"][brightness_level].keys()
+    sample_setting = list(config["brightness_values"].keys())[0]
+    displays = config["brightness_values"][sample_setting].keys()
     set_brightness(config, displays, brightness_level)
 
 if __name__ == "__main__":
