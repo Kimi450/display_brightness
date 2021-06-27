@@ -113,10 +113,9 @@ def set_brightness_level(args, config):
     level = "default"
     if args.toggle:
         brightness = sbc.get_brightness()
+        level="max"
         if brightness == list(config["brightness_values"]["max"].values()):
             level="min"
-        elif brightness == list(config["brightness_values"]["min"].values()):
-            level="max"
     elif args.level:
         level = args.level
     elif args.time:
@@ -131,7 +130,6 @@ def set_brightness_level(args, config):
             level = "max"
         else: # current time more than sunset time (no sun)
             level = "min"
-
     return level
 
 def get_frame_brightness(frame):
