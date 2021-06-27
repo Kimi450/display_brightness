@@ -74,3 +74,9 @@ Conditions are:
 ```bash
 python3 display_brightness.py -t [-d 20]
 ```
+
+Start the UI by running the following command, and select the options from the system tray icon. 
+
+```bash
+python3 ui.py
+```

@@ -153,6 +153,12 @@ def linear_func(x):
     """linear function for brightness"""
     return x*100/255
 
+def custom_rounding(x, base=10):
+    return base * round(x/base)
+
+def linear_func_step(x):
+    return custom_rounding(linear_func(x), 20)
+
 def webcam(config, displays):
     """
     constantly read the webcam and adjust brightness based on frame
@@ -163,7 +169,7 @@ def webcam(config, displays):
         """read the frame value and return adjusted brightness_level"""
         ret_val, frame = camera.read()
         frame_brightness = get_frame_brightness(frame)
-        return linear_func(frame_brightness)
+        return linear_func_step(frame_brightness)
 
     while True:
         brightness_level = read_frame(camera)
