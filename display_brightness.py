@@ -145,13 +145,13 @@ def get_frame_brightness(frame):
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV) #convert it to hsv
     return hsv[...,2].mean()
 
-def plateu_func(x, M=100, a=8/255):
+def plateu_func(x, M=100, a=0/255):
     """platueing function for brightness, heuristic"""
     return 100*(1-math.e**(-a*x))
 
 def linear_func(x):
     """linear function for brightness"""
-    return frame_brightness*100/255
+    return x*100/255
 
 def webcam(config, displays):
     """
@@ -163,7 +163,7 @@ def webcam(config, displays):
         """read the frame value and return adjusted brightness_level"""
         ret_val, frame = camera.read()
         frame_brightness = get_frame_brightness(frame)
-        return plateu_func(frame_brightness)
+        return linear_func(frame_brightness)
 
     while True:
         brightness_level = read_frame(camera)
