@@ -2,11 +2,14 @@
 
 import screen_brightness_control as sbc
 
-import argparse, yaml, geocoder, os
+import argparse, yaml, geocoder, os, math
 
 from suntime import Sun
 from datetime import datetime, timezone, timedelta
 
+import cv2
+
+import np
 def get_times():
     """
     get current time (ct), sunset (ss) time and sunrise (ss) time 
@@ -59,6 +62,11 @@ def parse_args(config):
         required=False,
         action="store_true"
     )
+    parser.add_argument('--webcam', '-wc',
+        help='Use your webcam to adjust brightness constantly',
+        required=False,
+        action="store_true"
+    )
     return parser.parse_args()
 
 def load_config(location="config.yaml"):
@@ -78,8 +86,20 @@ def set_brightness(config, displays, brightness_level):
     set the brightness for all the displays based on the config 
     and the brightness level
     """
-    if brightness_level.isdigit():
-        sbc.set_brightness(brightness_level)
+
+    def cast_brightness_level_int(brightness_level):
+        """
+        cast brightness_level to an int and return, else return None
+        """
+        try:
+            brightness_level = int(brightness_level)
+            return brightness_level
+        except Exception:
+            return None
+
+    if brightness_level_int := cast_brightness_level_int(brightness_level):
+        # print(brightness_level_int)
+        sbc.set_brightness(brightness_level_int)
     else:
         for display in displays:
             sbc.set_brightness(
@@ -114,17 +134,56 @@ def set_brightness_level(args, config):
 
     return level
 
+def get_frame_brightness(frame):
+    """get frame brightness after converting to HSV format"""
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV) #convert it to hsv
+    return hsv[...,2].mean()
+
+def plateu_func(x, M=100, a=4/255):
+    """platueing function for brightness, heuristic"""
+    return 100*(1-math.e**(-a*x))
+
+def linear_func(x):
+    """linear function for brightness"""
+    return frame_brightness*100/255
+
+def read_webcam(config, displays):
+    """
+    constantly read the webcam and adjust brightness based on frame
+    brightness. Press ESC to quit.
+    """
+    camera = cv2.VideoCapture(0)
+    def read_frame(camera):
+        """read the frame value and return adjusted brightness_level"""
+        ret_val, frame = camera.read()
+        frame_brightness = get_frame_brightness(frame)
+        return plateu_func(frame_brightness)
+
+    while True:
+        brightness_level = read_frame(camera)
+        set_brightness(config, displays, brightness_level)
+        if cv2.waitKey(30) == 27: 
+            break  # esc to quit
+    return True
+
 def main():
     config_path = os.path.join(
         os.path.split(os.path.realpath(__file__))[0],
         "config.yaml"
     )
+
     config = load_config(config_path)
     args = parse_args(config)
-    brightness_level = set_brightness_level(args, config)
+
     sample_setting = list(config["brightness_values"].keys())[0]
     displays = config["brightness_values"][sample_setting].keys()
-    set_brightness(config, displays, brightness_level)
+
+    brightness_level = set_brightness_level(args, config)
+
+    if args.webcam:
+        read_webcam(config, displays)
+    else:
+        set_brightness(config, displays, brightness_level)
 
 if __name__ == "__main__":
     main()

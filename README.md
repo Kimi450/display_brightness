@@ -48,10 +48,16 @@ Running the script with `-tg` or `-toggle` will toggle the brightness between `m
 python3 display_brightness.py -tg
 ```
 
-Running the script with `-l` or `--level` allows you to set the level of brightness from the options defined in the `config.yaml` file.
+Running the script with `-l` or `--level` allows you to set the level of brightness from the options defined in the `config.yaml` file. A number [0-100] can be used as well to set the brightness for all monitors.
 
 ```bash
 python3 display_brightness.py -l max
+```
+
+Running the script with `-wc` or `--webcam` uses your webcam to detect the brightness levels in the room and adjust the brightness level accordingly.
+
+```bash
+python3 display_brightness.py -wc
 ```
 
 Running the script with the `-t` or `--time` flag set enables automatic time based brightness control. 
