@@ -33,7 +33,7 @@ def format_times(times, time_format='%H:%M'):
         output = format(times.strftime(time_format))
     return output
 
-def parse_args(config):
+def parse_args():
     """parse passed in arguments"""
     parser = argparse.ArgumentParser(
         description="Screen dimmer for your monitors",
@@ -145,7 +145,7 @@ def get_frame_brightness(frame):
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV) #convert it to hsv
     return hsv[...,2].mean()
 
-def plateu_func(x, M=100, a=4/255):
+def plateu_func(x, M=100, a=8/255):
     """platueing function for brightness, heuristic"""
     return 100*(1-math.e**(-a*x))
 
@@ -167,20 +167,24 @@ def webcam(config, displays):
 
     while True:
         brightness_level = read_frame(camera)
+        print(brightness_level)
         set_brightness(config, displays, brightness_level)
         if cv2.waitKey(30) == 27: 
             break  # esc to quit
     return True
 
-def main():
+def init():
+    """initialse"""
     config_path = os.path.join(
         os.path.split(os.path.realpath(__file__))[0],
         "config.yaml"
     )
-
     config = load_config(config_path)
-    args = parse_args(config)
+    args = parse_args()
+    return args, config
 
+def main():
+    args, config = init()
     set_brightness_level(args, config)
 
 if __name__ == "__main__":
