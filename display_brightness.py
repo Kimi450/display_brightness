@@ -75,7 +75,6 @@ def load_config(location="config.yaml"):
         try:
             config = yaml.safe_load(stream)
         except Exception as exc:
-
             print(f"Error reading config file at: {location}")
             print(exc)
             exit(1)
@@ -83,7 +82,7 @@ def load_config(location="config.yaml"):
 
 def set_brightness(config, displays, brightness_level):
     """
-    set the brightness for all the displays based on the config 
+    set the brightness for all the displays based on the config
     and the brightness level
     """
 
@@ -95,12 +94,14 @@ def set_brightness(config, displays, brightness_level):
             brightness_level = int(brightness_level)
             return brightness_level
         except Exception:
-            return None
+            return -1
 
-    if brightness_level_int := cast_brightness_level_int(brightness_level):
-        # print(brightness_level_int)
+    brightness_level_int = cast_brightness_level_int(brightness_level)
+    if brightness_level_int>=0:
+        # all displays have the same value
         sbc.set_brightness(brightness_level_int)
     else:
+        # config based values
         for display in displays:
             sbc.set_brightness(
                 config["brightness_values"][brightness_level][display],
@@ -109,15 +110,19 @@ def set_brightness(config, displays, brightness_level):
     return True
 
 def set_brightness_level(args, config):
-    """set the brightness level based on the argument(s) or other time"""
-    level = "default"
+    """set the brightness level based on the argument(s)"""
+
+    sample_settings = list(config["brightness_values"].keys())[0]
+    displays = config["brightness_values"][sample_settings].keys()
+    brightness_level = "default"
+
     if args.toggle:
         brightness = sbc.get_brightness()
-        level="max"
+        brightness_level = "max"
         if brightness == list(config["brightness_values"]["max"].values()):
-            level="min"
+            brightness_level = "min"
     elif args.level:
-        level = args.level
+        brightness_level = args.level
     elif args.time:
         ct, sr, ss = get_times()
         delta = 0
@@ -125,12 +130,18 @@ def set_brightness_level(args, config):
             delta = timedelta(minutes=int(args.delta))
 
         if ct <= sr - delta: # current time less than or equal sunrise time (no sun)
-            level = "min"
+            brightness_level = "min"
         elif ct <= ss + delta: # current time less than or equal to sunset time (sun)
-            level = "max"
+            brightness_level = "max"
         else: # current time more than sunset time (no sun)
-            level = "min"
-    return level
+            brightness_level = "min"
+    elif args.webcam:
+        webcam(config, displays)
+    
+    if not args.webcam:
+        set_brightness(config, displays, brightness_level)
+    
+    return True
 
 def get_frame_brightness(frame):
     """get frame brightness after converting to HSV format"""
@@ -145,7 +156,7 @@ def linear_func(x):
     """linear function for brightness"""
     return frame_brightness*100/255
 
-def read_webcam(config, displays):
+def webcam(config, displays):
     """
     constantly read the webcam and adjust brightness based on frame
     brightness. Press ESC to quit.
@@ -173,15 +184,7 @@ def main():
     config = load_config(config_path)
     args = parse_args(config)
 
-    sample_setting = list(config["brightness_values"].keys())[0]
-    displays = config["brightness_values"][sample_setting].keys()
-
-    brightness_level = set_brightness_level(args, config)
-
-    if args.webcam:
-        read_webcam(config, displays)
-    else:
-        set_brightness(config, displays, brightness_level)
+    set_brightness_level(args, config)
 
 if __name__ == "__main__":
     main()
