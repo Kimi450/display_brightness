@@ -2,14 +2,11 @@
 
 import screen_brightness_control as sbc
 
-import argparse, yaml, geocoder, os, math
+import argparse, yaml, geocoder, os, math, cv2
 
 from suntime import Sun
 from datetime import datetime, timezone, timedelta
 
-import cv2
-
-import np
 def get_times():
     """
     get current time (ct), sunset (ss) time and sunrise (ss) time 
