@@ -2,6 +2,19 @@
 
 Change the brightness of all your monitors in one go. Currently, this project only works on Windows (tested on Windows 10). Run the commands in command promt or powershell.
 
+Also provided is an AHK script which can be used to setup shortcuts. 
+
+Defaults are:
+| Key combination | Action                           |
+|-----------------|----------------------------------|
+|Windows Key + `  | display_brightness.py -tg        |
+|Windows Key + 1  | display_brightness.py -l 100     |
+|Windows Key + 2  | display_brightness.py -l 50      |
+|Windows Key + 3  | display_brightness.py -l 0       |
+|Windows Key + 4  | display_brightness.py -l custom  |
+|Windows Key + 5  | display_brightness.py -wc        |
+
+
 ## Setup of config.yaml
 
 Every entry under the `brightness_values` section represents an option for your monitors' brightness levels. Check Usage for more information on how to switch to a setting.
