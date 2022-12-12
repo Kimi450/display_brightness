@@ -2,18 +2,24 @@
 
 Change the brightness of all your monitors in one go. Currently, this project only works on Windows (tested on Windows 10). Run the commands in command promt or powershell.
 
+## AutoHotKey (AHK)
+
 Also provided is an AHK script which can be used to setup shortcuts. 
 
 Defaults are:
 | Key combination | Action                           |
 |-----------------|----------------------------------|
 |Windows Key + `  | display_brightness.py -tg        |
-|Windows Key + 1  | display_brightness.py -l 100     |
+|Windows Key + 1  | display_brightness.py -l max     |
 |Windows Key + 2  | display_brightness.py -l 50      |
-|Windows Key + 3  | display_brightness.py -l 0       |
+|Windows Key + 3  | display_brightness.py -l min     |
 |Windows Key + 4  | display_brightness.py -l custom  |
 |Windows Key + 5  | display_brightness.py -wc        |
 
+1. Download and install [AutoHotKey](https://www.autohotkey.com/)
+2. Make sure you change the location of the `display_brightness.py` script in the AHK file. 
+3. Run the .ahk file and check it works correctly
+4. Make Windows/your OS run it on startup, check [here for Windows 10/11](https://www.thewindowsclub.com/how-to-run-cmd-command-on-startup-automatically-in-windows)
 
 ## Setup of config.yaml
 
