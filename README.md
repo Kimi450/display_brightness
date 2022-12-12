@@ -38,7 +38,7 @@ brightness_values:
 
 Install the following prerequisite python3 libraries
 ```bash
-pip3 install screen_brightness_control pyyaml geocoder suntime
+pip3 install screen_brightness_control pyyaml geocoder suntime opencv-python
 ```
 
 ## Usage
